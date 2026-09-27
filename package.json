@@ -1,0 +1,21 @@
+{
+  "name": "shlok-interactive-portfolio",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node scripts/server.mjs",
+    "start": "node scripts/server.mjs",
+    "build": "node scripts/build-room.mjs && node scripts/personalize.mjs && node scripts/build.mjs",
+    "room": "node scripts/build-room.mjs",
+    "personalize": "node scripts/personalize.mjs"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "dependencies": {
+    "draco3d": "1.5.7",
+    "esbuild": "0.25.10",
+    "three": "0.164.1"
+  }
+}

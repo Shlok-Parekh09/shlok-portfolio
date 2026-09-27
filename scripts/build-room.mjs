@@ -1,0 +1,14 @@
+import { build } from 'esbuild';
+import { cp, mkdir, writeFile } from 'node:fs/promises';
+import path from 'node:path';
+const root=path.resolve(import.meta.dirname,'..');
+const source=path.resolve(root,'../room-reference/public/assets');
+const dest=path.join(root,'public/portfolio/room');
+await mkdir(dest,{recursive:true});
+for(const name of ['RoomModel.glb','chairtopDraco.glb','clock.glb','bakedTextureDaycmp.webp','roomTextureNightcmp.webp','roomTextureLightMapcmp.webp']) await cp(path.join(source,name),path.join(dest,name));
+await cp(path.join(root,'node_modules/three/examples/jsm/libs/draco/gltf'),path.join(dest,'draco'),{recursive:true});
+await mkdir(path.join(root,'public/portfolio/music'),{recursive:true});
+for(const [from,to] of [['Post Malone, Swae Lee - Sunflower.mp3','sunflower.mp3'],['Post Malone - Circles.mp3','circles.mp3'],['The Weeknd - Blinding Lights (Official Audio).mp3','blinding-lights.mp3']]) await cp(path.resolve(root,'../songs',from),path.join(root,'public/portfolio/music',to));
+await build({entryPoints:[path.join(root,'src/room.js')],outfile:path.join(root,'public/room.js'),bundle:true,format:'esm',minify:true,target:'es2022',legalComments:'eof'});
+await writeFile(path.join(dest,'provenance.json'),JSON.stringify({source:'https://github.com/AT010303/Room_Portfolio',commit:'fd7313e10098769e2d25674f3d67dc6a1520cef2',reuse:'Original room geometry and baked textures. TV removed at mesh level; personal photo/display meshes excluded. Custom screens and camera.',license:'No license file was present in the source repository. Obtain permission before public redistribution.'},null,2));
+console.log('Reference room bundled with local Draco decoder and Shlok’s three tracks.');

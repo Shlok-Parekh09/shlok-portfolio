@@ -1,0 +1,6 @@
+{
+  "source": "https://github.com/AT010303/Room_Portfolio",
+  "commit": "fd7313e10098769e2d25674f3d67dc6a1520cef2",
+  "reuse": "Original room geometry and baked textures. TV removed at mesh level; personal photo/display meshes excluded. Custom screens and camera.",
+  "license": "No license file was present in the source repository. Obtain permission before public redistribution."
+}
