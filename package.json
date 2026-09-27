@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "node scripts/server.mjs",
     "start": "node scripts/server.mjs",
-    "build": "node scripts/build-room.mjs && node scripts/personalize.mjs && node scripts/build.mjs",
+    "build": "node scripts/build.mjs",
     "room": "node scripts/build-room.mjs",
     "personalize": "node scripts/personalize.mjs"
   },
