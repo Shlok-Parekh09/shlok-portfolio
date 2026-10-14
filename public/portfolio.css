@@ -2,6 +2,12 @@
 .sp-ui { position: fixed; inset: 0; z-index: 550; pointer-events: none; color: var(--sp-paper); font-family: 'General Sans', sans-serif; }
 .sp-ui *, .sp-dialog * { box-sizing: border-box; }
 .sp-ui [hidden], .sp-dialog [hidden] { display: none !important; }
+.sp-lunar {position:absolute;inset:0;background:#030509;pointer-events:none;}
+.sp-lunar-canvas {display:block;width:100%;height:100%;}
+.sp-lunar-intro {position:absolute;left:5vw;top:17vh;max-width:370px;text-shadow:0 2px 25px #000;}
+.sp-lunar-intro h1 {font-size:clamp(34px,4.7vw,76px);line-height:1.02;font-weight:400;letter-spacing:-.05em;white-space:pre-line;margin:22px 0;}
+.sp-lunar-intro p {font:13px/1.8 'JetBrains Mono',monospace;max-width:330px;}
+@media(max-width:600px){.sp-lunar-intro{top:12vh;left:7vw;right:7vw;max-width:none;}.sp-lunar-intro p{font-size:11px;max-width:280px;}}
 .sp-eyebrow { display: block; font: 10px/1.6 'JetBrains Mono', monospace; letter-spacing: .17em; color: var(--sp-ice); text-transform: uppercase; }
 .sp-button { display: inline-flex; justify-content: center; align-items: center; min-height: 42px; padding: 11px 16px; border: 1px solid #a7c9db50; background: #0d1827bc; color: #f4f7fa; border-radius: 2px; font: 10px/1.4 'JetBrains Mono', monospace; letter-spacing: .06em; text-decoration: none; cursor: pointer; pointer-events: auto; transition: background .2s, border-color .2s; }
 .sp-button:hover, .sp-button[aria-selected='true'] { background: #bddced20; border-color: #bddced; }
@@ -95,13 +101,20 @@ body[data-portfolio-phase='ending'] #pc-overlay-audio { color: white !important;
 
 /* The original HUD is the glass. No second blue panel over the landscape. */
 .sp-skills-glass { background: none; border: 0; box-shadow: none; backdrop-filter: none; clip-path: none; padding: 10px 0; }
-.sp-skills-glass > .sp-eyebrow { color: white; text-shadow: 0 1px 15px #111; }
-.sp-skill-panel { overflow: visible; pointer-events: none; }
-.sp-skill-panel h2 { margin: 15px 0 24px; max-width: 900px; font-weight: 500; font-size: clamp(23px,3.4vw,49px); text-shadow: 0 2px 25px #0009; }
-.sp-skill-tools { display: flex; flex-wrap: wrap; gap: 12px; }
-.sp-skill-tools li { padding: 14px 19px; border: 1px solid #ffffff70; border-radius: 3px; background: #ffffff28; backdrop-filter: blur(15px); color: #fff; font: 12px/1.5 'JetBrains Mono', monospace; box-shadow: inset 0 1px #ffffff38; }
+.sp-skills-glass > .sp-eyebrow { align-self: flex-start; color: #fff; background: #111d2ee8; padding: 7px 10px; border-radius: 3px; text-shadow: none; }
+.sp-skill-panel { overflow: auto; min-height: 0; pointer-events: auto; scrollbar-width: thin; }
+.sp-skill-panel h2 { margin: 12px 0 18px; max-width: 900px; color: #fff; font-weight: 600; font-size: clamp(22px,3vw,40px); line-height: 1.15; text-shadow: 0 2px 4px #101827, 0 0 20px #101827; }
+.sp-skill-tools { display: flex; flex-wrap: wrap; align-content: flex-start; gap: 10px; margin: 0; padding: 0; }
+.sp-skill-tools li { max-width: 100%; min-width: 0; overflow-wrap: anywhere; padding: 12px 16px; border: 1px solid #ffffffed; border-radius: 5px; background: #ffffffe0; backdrop-filter: blur(16px); color: #152238; text-shadow: none; font: 600 12px/1.45 'JetBrains Mono', monospace; box-shadow: 0 2px 10px #10182725, inset 0 1px #fff; }
 .sp-skill-tools li::before { content: none; }
 .sp-room { position: absolute; inset: 0; overflow: hidden; background: #c2a09b; pointer-events: auto; }
+.sp-portal-exterior { position:absolute; inset:0; z-index:0; background:#000; overflow:hidden; pointer-events:none; }
+.sp-blackhole-footage { position:absolute;inset:0;background:center 43%/cover no-repeat;transform-origin:50% 43%;will-change:transform,opacity; }
+.sp-portal-exterior video { width:100%;height:100%;object-fit:cover;object-position:50% 43%;display:block; }
+.sp-room-canvas { z-index:1; }
+.sp-room-caption,.sp-laptop-access { z-index:4; }
+.sp-room.is-entering .sp-room-caption { opacity:0; }
+.sp-room-loading { z-index:5; }
 .sp-room-canvas { position: absolute; inset: 0; display: block; width: 100%; height: 100%; touch-action: pan-y; }
 .sp-room-loading { position: absolute; inset: 0; display: grid; place-items: center; color: #fff; background: radial-gradient(at 60% 25%,#cca6a0,#866b79); font: 13px 'JetBrains Mono',monospace; }
 .sp-room-caption { position: absolute; left: 4.5vw; bottom: 5vh; max-width: min(470px,75vw); pointer-events: none; text-shadow: 0 2px 16px #000b; }
@@ -109,6 +122,10 @@ body[data-portfolio-phase='ending'] #pc-overlay-audio { color: white !important;
 .sp-room-caption p { font-size: 11px; line-height: 1.7; max-width: 350px; margin-bottom: 17px; }
 .sp-room-caption .sp-eyebrow { color: white; }
 .sp-laptop-access { position: absolute; right: 4.5vw; bottom: 5vh; pointer-events: auto; }
+.sp-laptop-access { z-index: 7; }
+.sp-room-light { position: absolute; right: max(24px,4.5vw); top: 100px; z-index: 7; pointer-events: auto; padding: 12px 18px; color: #1b2435; background: #fffffff0; border: 1px solid #ffffff80; border-radius: 24px; }
+.sp-star-flight { position: absolute; inset: 0; width: 100%; height: 100%; background: #01030a; }
+.sp-certificate-controls { top: auto !important; right: 5vw !important; bottom: 5vh; transform: none !important; }
 .sp-song-options { display: none; gap: 6px; margin-top: 7px; flex-direction: column; }
 .sp-room[data-focus='laptop'] .sp-song-options { display: flex; }
 .sp-room[data-focus='laptop'] .sp-room-caption { opacity: .4; }
@@ -116,14 +133,14 @@ body[data-portfolio-phase='ending'] #pc-overlay-audio { color: white !important;
 .sp-electric { z-index: 4; }
 .sp-ending { z-index: 5; }
 #pc-overlay-audio { display: none !important; }
-.sp-contact { inset: auto 5vw 9vh; display: grid; grid-template-columns: 100px minmax(0,510px); gap: 24px; justify-content: start; align-items: end; padding: 25px; width: min(690px,90vw); background: linear-gradient(110deg,#050812d9,#11132499); border: 1px solid #fff2; backdrop-filter: blur(8px); border-radius: 6px; }
+.sp-contact { inset: auto 5vw 9vh; display: grid; grid-template-columns: 100px minmax(0,510px); gap: 24px; justify-content: start; align-items: end; padding: 25px; width: min(690px,90vw); background: transparent; border: 0; backdrop-filter: none; border-radius: 0; text-shadow: 0 2px 8px #000,0 0 24px #000; }
 .sp-portrait img { width: 100px; height: 130px; border-radius: 50px 50px 3px 3px; }
 .sp-portrait figcaption { font-size: 7px; margin-top: 12px; }
 .sp-contact-copy h2 { font-size: clamp(25px,2.7vw,40px); margin: 10px 0; }
 .sp-about { font-size: 12px; line-height: 1.65; margin-bottom: 16px; }
 .sp-contact-link { font-size: 16px; }
 .sp-ending-shade { background: linear-gradient(0deg,#03051188,transparent 70%); }
-.sp-contact-backdrop { background-position: center center; transition: opacity 2.3s cubic-bezier(.22,.61,.36,1); }
+.sp-contact-backdrop { background-position: center center; background-size: cover; background-repeat: no-repeat; transition: none; will-change: opacity,transform; }
 .sp-film-status { bottom: 25px; }
 @media(max-width:768px){
  .sp-skills-glass { padding: 5px 0; }
@@ -146,3 +163,52 @@ body[data-portfolio-phase='ending'] #pc-overlay-audio { color: white !important;
  .sp-contact-backdrop { background-position: center 24%; }
 }
 @media(max-height:500px){ .sp-skill-panel h2 { font-size: 21px; margin: 8px 0 12px; } .sp-skill-tools li { padding: 6px 10px; font-size: 9px; } .sp-contact { bottom: 40px; max-height: 70dvh; overflow: auto; } }
+.sp-skills-tracking .sp-skills-glass { height:auto!important; max-height:58vh; background: linear-gradient(125deg,rgba(13,42,32,.75),rgba(29,60,47,.42)); border:1px solid rgba(226,244,212,.28); border-radius:18px; padding:clamp(16px,2vw,30px); backdrop-filter:blur(12px) saturate(.85); box-shadow:0 12px 40px #10291b25; box-sizing:border-box; }
+.sp-skills-glass .sp-eyebrow { background:#143c2c; color:#e3f2c9; border:1px solid #c8e6ad40; }
+.sp-skills-glass .sp-skill-panel h2 { color:#f6f9ed; text-shadow:0 2px 8px #10291b; }
+.sp-skills-glass .sp-skill-tools li { background:rgba(249,251,237,.94); color:#173b2c; border:1px solid #e4eed6; box-shadow:0 2px 8px #09201618; text-shadow:none; }
+.sp-skills-scene {position:absolute;inset:0;pointer-events:none;z-index:1;}
+.sp-skills-canvas {position:absolute;inset:0;width:100%;height:100%;pointer-events:none;}
+.sp-skills-tracking {z-index:2;transform:none!important;}
+.sp-skills-tracking .sp-skills-glass {left:46%!important;top:26%!important;width:49%!important;max-height:64vh;background:none;border:0;border-radius:0;box-shadow:none;backdrop-filter:none;}
+.sp-skills-glass .sp-skill-panel h2 {font-size:clamp(22px,2.5vw,38px);}
+.sp-skills-glass .sp-skill-tools {gap:8px;}
+.sp-skills-glass .sp-skill-tools li {padding:10px 13px;font-size:clamp(10px,1vw,13px);background:#09292de8;color:#e3fcff;border:1px solid #76dfe87a;box-shadow:none;text-shadow:0 1px 3px #001719;}
+@media(max-width:620px){.sp-skills-tracking .sp-skills-glass{left:5%!important;top:50%!important;width:90%!important;max-height:43vh;padding:14px;}.sp-skills-glass .sp-skill-panel h2{font-size:21px;margin:10px 0;}.sp-skills-glass .sp-skill-tools li{padding:7px 9px;font-size:10px;}}
+/* Scroll is the sole clock for forward and backward transition state. */
+.sp-contact,.sp-film,.sp-ending-video,.sp-warp {animation:none;transition:none;}
+.sp-contact,.htb-launch {background:transparent!important;border:0!important;box-shadow:none!important;backdrop-filter:none!important;}
+.sp-contact::before,.sp-contact::after,.htb-launch::before,.htb-launch::after {background:none!important;box-shadow:none!important;}
+.sp-frame-sequence {position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:6;}
+/* Skills occupy the original map HUD again, without a character column. */
+.sp-button,.sp-room-light {min-height:44px;touch-action:manipulation;}
+.sp-dialog {max-width:calc(100vw - 24px);max-height:calc(100dvh - 32px);overflow:auto;overscroll-behavior:contain;}
+@media(max-width:768px){
+ .sp-room-light {top:max(75px,calc(env(safe-area-inset-top) + 55px));right:max(12px,env(safe-area-inset-right));padding:10px 12px;}
+ .sp-laptop-access {bottom:max(20px,env(safe-area-inset-bottom));}
+ .sp-contact {box-sizing:border-box;width:90vw;padding:12px;bottom:calc(45px + env(safe-area-inset-bottom));}
+ .sp-contact-link {overflow-wrap:anywhere;}
+ .sp-skill-tools li {backdrop-filter:none;}
+}
+.sp-skills-tracking .sp-skills-glass {left:16%!important;top:25%!important;width:68%!important;max-height:60vh;padding:16px 20px;}
+.sp-skills-glass .sp-eyebrow {background:#172b3ce8;color:#edf6ff;border-color:#c2d6e74d;}
+.sp-skills-glass .sp-skill-tools {gap:12px;max-width:1000px;}
+.sp-skills-glass .sp-skill-tools li {background:#142b3ee8;border-color:#b6cfdf80;color:#f3f8fc;}
+@media(max-width:620px){.sp-skills-tracking .sp-skills-glass{left:10%!important;top:23%!important;width:80%!important;max-height:64vh;padding:10px;}.sp-skills-glass .sp-skill-tools{gap:7px;}}
+/* Mobile: reserve separate space for the light control, heading and player. */
+@media(max-width:800px){
+ .sp-room-light {top:calc(16px + env(safe-area-inset-top));right:12px;min-height:44px;}
+ .sp-room-caption {top:calc(72px + env(safe-area-inset-top));left:16px;right:16px;max-width:none;text-align:right;}
+ .sp-room-caption h2 {font-size:22px;margin:8px 0;}
+ .sp-room-caption p {font-size:11px;line-height:1.5;margin:0 0 0 auto;max-width:270px;}
+ .sp-room-caption .sp-eyebrow {font-size:9px;line-height:1.6;}
+ .sp-ending-shade {background:linear-gradient(to bottom,rgba(4,5,15,.2) 0%,transparent 30%,rgba(4,5,15,.65) 56%,rgba(4,5,15,.94) 100%);}
+ .sp-contact {inset:auto 16px calc(42px + env(safe-area-inset-bottom));width:auto;max-height:58dvh;padding:0;gap:12px;overflow:auto;overscroll-behavior:contain;scrollbar-width:thin;align-content:start;text-shadow:0 2px 5px #000;}
+ .sp-contact-copy,.sp-portrait {min-width:0;margin:0;}
+ .sp-contact-copy h2 {font-size:clamp(24px,6vw,30px);line-height:1.12;margin:8px 0 12px;}
+ .sp-contact-copy .sp-eyebrow {font-size:9px;line-height:1.6;}
+ .sp-about {font-size:13px;line-height:1.65;color:#fff;}
+ .sp-contact-link {font-size:15px;line-height:1.6;overflow-wrap:anywhere;}
+ .sp-portrait figcaption {font-size:9px;line-height:1.6;align-self:center;}
+ .sp-film-status {bottom:calc(14px + env(safe-area-inset-bottom));left:16px;right:16px;font-size:8px;line-height:1.4;}
+}

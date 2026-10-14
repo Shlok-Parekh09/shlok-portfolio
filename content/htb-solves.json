@@ -1,0 +1,11 @@
+{
+  "sync": {
+    "connected": false,
+    "lastUpdated": null,
+    "message": "Screenshot-confirmed solves. Automatic sync awaits the HTB Labs profile connection; ratings are a snapshot, not live statistics."
+  },
+  "machines": [
+    {"title":"Cap","os":"Linux","difficulty":"Easy","userOwned":true,"systemOwned":true,"rating":4.6,"ratingCount":4651,"releasedOn":"2021-06-05"},
+    {"title":"Layover","os":"Linux","difficulty":"Medium","userOwned":true,"systemOwned":true,"rating":4.1,"ratingCount":245,"releasedOn":"2026-09-26"}
+  ]
+}

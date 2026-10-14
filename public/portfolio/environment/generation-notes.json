@@ -1,0 +1,8 @@
+{
+  "tool": "Built-in image generation",
+  "assets": [
+    {"file": "../ending/blackhole-refined.webp", "prompt": "Faithfully refine the supplied centered astronaut, glowing pink-orange black hole and jagged reflective rock scene. Enhance detail and remove baked black letterbox bars by extending the scene to every edge. No text or interface."},
+    {"file": "himalayan-terrain.webp", "prompt": "Retain the supplied straight-down aerial ridge layout; replace brown desert and urban grid with lush Himalayan alpine meadows, forests, snow-capped ridges, turquoise rivers and a lake. No sky, labels or borders."},
+    {"file": "himalayan-window.webp", "prompt": "Photoreal wide window-view landscape: sunlit grass and wildflowers, evergreen trees, green foothills and distant snowy Himalayas under a soft blue morning sky. No window frame, buildings, people, text or borders."}
+  ]
+}

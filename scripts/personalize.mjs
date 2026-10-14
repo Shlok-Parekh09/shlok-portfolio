@@ -141,12 +141,24 @@ for (const cert of content.certificates) {
 for (const song of content.songs) {
   try { await copyFile(path.join(root, '../songs', path.basename(song.src)), path.join(pub, song.src)); } catch(e) { console.error(e) }
 }
-for (const video of content.ending.videos) await copyFile(path.join(root, '../../', path.basename(video)), path.join(pub, video));
-await copyFile(path.join(root, '../../Interstellar Main Theme - Hans Zimmer (1).mp3'), path.join(pub, content.ending.soundtrack));
-await copyFile(path.join(root, '../WhatsApp Image 2026-09-20 at 23.32.42 (1).jpeg'), path.join(pub, content.ending.photo));
+try { for (const video of content.ending.videos) await copyFile(path.join(root, '../../', path.basename(video)), path.join(pub, video)); } catch(e) {}
+try { await copyFile(path.join(root, '../../Interstellar Main Theme - Hans Zimmer (1).mp3'), path.join(pub, content.ending.soundtrack)); } catch(e) {}
+try { await copyFile(path.join(root, '../WhatsApp Image 2026-09-20 at 23.32.42 (1).jpeg'), path.join(pub, content.ending.photo)); } catch(e) {}
 if (await exists(path.join(root, '../resume.pdf'))) await copyFile(path.join(root, '../resume.pdf'), path.join(pub, 'resume.pdf'));
 loading = loading.replace('container.appendChild(wrapper);', 'container.appendChild(wrapper);\n        if (window.createPortfolioWarp) window.createPortfolioWarp(wrapper);');
+const uiCameraId = byName('UICamera ').resource_id;
+const uiCamera = scene.entities[uiCameraId];
+if (uiCamera && uiCamera.components.camera) {
+  uiCamera.components.camera.clearColorBuffer = false;
+  uiCamera.components.camera.priority = 1;
+  if (uiCamera.components.script && uiCamera.components.script.scripts && uiCamera.components.script.scripts.screenRenderTarget) {
+    delete uiCamera.components.script.scripts.screenRenderTarget;
+    uiCamera.components.script.order = uiCamera.components.script.order.filter(s => s !== 'screenRenderTarget');
+    if (uiCamera.components.script.order.length === 0) delete uiCamera.components.script;
+  }
+}
 await writeFile(path.join(pub, '2509662.json'), JSON.stringify(scene));
+
 await writeFile(path.join(pub, 'config.json'), JSON.stringify(config));
 await writeFile(path.join(pub, '__game-scripts.js'), game);
 loading = loading.replaceAll('edolusReplay', 'shlokReplay').replaceAll('Edolus', 'Shlok');
@@ -154,3 +166,4 @@ settings = settings.replaceAll('edolus', 'shlok').replaceAll('Edolus', 'Shlok');
 await writeFile(path.join(pub, '__loading__.js'), loading);
 await writeFile(path.join(pub, '__settings__.js'), settings);
 console.log('SHLOK: room replaces servers; PC credentials; full-bleed projects; direct travel/contact ending.');
+

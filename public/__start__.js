@@ -277,6 +277,9 @@
             }
 
             initCSS();
+            // Avoid native 3x/4x phone resolution for the full-screen 3D renderer.
+            app.graphicsDevice.maxPixelRatio = Math.min(window.devicePixelRatio || 1,
+                window.matchMedia('(max-width: 768px), (pointer: coarse)').matches ? 1.2 : 1.75);
 
             if (LTC_MAT_1.length && LTC_MAT_2.length && app.setAreaLightLuts.length === 2) {
                 app.setAreaLightLuts(LTC_MAT_1, LTC_MAT_2);

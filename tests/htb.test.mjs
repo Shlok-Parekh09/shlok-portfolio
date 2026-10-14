@@ -1,0 +1,12 @@
+import {test} from 'node:test';
+import assert from 'node:assert/strict';
+import fs from 'node:fs/promises';
+import os from 'node:os';
+import path from 'node:path';
+import {noteRecord,buildWriteups} from '../scripts/build-writeups.mjs';
+import {machineStats} from '../public/htb.js';
+const note=(extra,body='PRIVATE BODY')=>'---\ntitle: Test\nslug: test\nos: Linux\ndifficulty: Easy\nstatus: Retired\nlisted: true\n'+extra+'\n---\n'+body;
+test('draft body is never exported; explicit public retired note is exported',()=>{assert.equal(noteRecord(note('published: false'),'test.md').body,'');assert.equal(noteRecord(note('published: true'),'test.md').body,'PRIVATE BODY');assert.equal(noteRecord(note('listed: false'),'test.md'),null);});
+test('active notes and invalid slugs fail closed',()=>{assert.throws(()=>noteRecord(note('published: true\nstatus: Active'),'test.md'));assert.throws(()=>noteRecord(note('slug: ../../secret'),'test.md'));});
+test('stats count actual own fields rather than machine count',()=>{assert.deepEqual(machineStats([{systemOwned:false,userOwned:true,published:false},{systemOwned:true,userOwned:true,published:true}]),{solved:1,user:2,writeups:1});});
+test('export includes listed metadata but excludes private notes and unused attachments',async()=>{const root=await fs.mkdtemp(path.join(os.tmpdir(),'shlok-htb-test-'));try{const vault=path.join(root,'vault'),out=path.join(root,'out');await fs.mkdir(path.join(vault,'Machines'),{recursive:true});await fs.writeFile(path.join(vault,'Machines','test.md'),note('published: false'));await fs.writeFile(path.join(vault,'Machines','private.md'),note('listed: false','SECRET'));const result=await buildWriteups(vault,out);assert.equal(result.machines.length,1);assert.deepEqual(result.assets,{});const text=await fs.readFile(path.join(out,'index.json'),'utf8');assert(!text.includes('PRIVATE BODY'));assert(!text.includes('SECRET'));}finally{await fs.rm(root,{recursive:true,force:true});}});

@@ -12,7 +12,10 @@
       return { index: Math.min(count - 1, index + (slide > .5 ? 1 : 0)), slide, dissolve: smooth(range(p, .550, .566)) };
     },
     iris(p) {
-      return { reveal: smooth(range(p, .704, .712)), color: smooth(range(p, .705, .714)) };
+      return { reveal: smooth(range(p, .704, .724)), color: smooth(range(p, .707, .727)) };
+    },
+    ending(p) {
+      return { contact: smooth(range(p,.704,.724)) };
     },
   };
 })(typeof window === 'undefined' ? globalThis : window);

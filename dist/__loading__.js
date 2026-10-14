@@ -24,8 +24,8 @@ pc.script.createLoadingScreen(function (app) {
         if (IS_REPLAY) sessionStorage.removeItem('shlokReplay');
     } catch (e) {}
 
-    var REVEAL_MIN_MS    = IS_REPLAY ? 0 : 3000;  // min time fully black (0 on replay — the logo draw still gates the reveal)
-    var FAKE_FILL_MS     = 3500;  // gentle time-based "fake" fill so the % never stalls
+    var REVEAL_MIN_MS    = 0;  // Asset readiness, not an artificial black-screen wait.
+    var FAKE_FILL_MS     = 900;
     // The % is a weighted blend of the two real phases of getting ready:
     //   asset preload  → 0 .. ASSET_SHARE
     //   scene warm-up  → ASSET_SHARE .. ~99%  (walk + settle, via 'warmup:progress')
@@ -38,13 +38,13 @@ pc.script.createLoadingScreen(function (app) {
     // After 'start', PlayCanvas does a last burst of main-thread work (a brief
     // microfreeze). We wait this long before opening the bands so the reveal
     // begins on a free thread AND the scene has rendered its first frames.
-    var REVEAL_SETTLE_MS = 800;
+    var REVEAL_SETTLE_MS = 0;
 
     // Band opening — a single open, AFTER loading (the main thread is free by
     // then, and translateY runs on the compositor anyway, so no worker needed
     // for these — the worker below is for the LOGO, which still animates while
     // the preload hammers the main thread).
-    var BAND_OPEN_MS = 1600;
+    var BAND_OPEN_MS = 220;
 
     // Splash-logo geometry (loading phase, centre of screen).
     var SPLASH_LOGO_WIDTH = 430;      // px (max-width 85vw in CSS)
@@ -69,6 +69,10 @@ pc.script.createLoadingScreen(function (app) {
 
     var injectGeneralSans = function () {
         if (document.getElementById(FONT_STYLE_ID)) return;
+        // Use the local WOFF2 faces already in the page; do not download a
+        // second set of OTF fonts from the PlayCanvas asset registry.
+        var localFaces=document.createElement('style');localFaces.id=FONT_STYLE_ID;
+        localFaces.textContent=FONT_FALLBACK_CSS;document.head.appendChild(localFaces);return;
         var css = '';
         try {
             var matches = app.assets ? app.assets.filter(function (a) {
@@ -306,8 +310,8 @@ pc.script.createLoadingScreen(function (app) {
     //
     //  Fallback: if OffscreenCanvas is unavailable, staggered fill fades.
     // ──────────────────────────────────────────────
-    var DRAW_MS      = 1100;  // wipe time for a single letter
-    var STAGGER_MS   = 220;   // gap between consecutive letters starting
+    var DRAW_MS      = 280;  // Short logo reveal; asset readiness remains the gate.
+    var STAGGER_MS   = 45;
     var EDGE_FEATHER = 14;    // soft leading-edge width (viewBox units)
 
     // Worker source. Runs OFF the main thread, so PlayCanvas loading can't
@@ -381,11 +385,11 @@ pc.script.createLoadingScreen(function (app) {
     var fallbackReveal = function (shapes) {
         // No OffscreenCanvas support → staggered left→right fill fades.
         shapes.forEach(function (shape, i) {
-            shape.style.transition = 'fill-opacity 0.9s ease ' + (i * 0.15) + 's';
+            shape.style.transition = 'fill-opacity 0.28s ease ' + (i * 0.045) + 's';
             shape.style.fillOpacity = '1';
         });
         setTimeout(function () { logoAnimDone = true; },
-            shapes.length * 150 + 900 + 100);
+            shapes.length * 45 + 280 + 50);
     };
 
     var animateLogo = function () {
@@ -686,7 +690,7 @@ pc.script.createLoadingScreen(function (app) {
         // THE GATE: app ready + logo fully drawn + minimum black time.
         // (The elapsed>8s guard means a lost worker can never deadlock us.)
         if (loadingComplete &&
-            (logoAnimDone || elapsed > 8000) &&
+            (logoAnimDone || elapsed > 500) &&
             elapsed >= REVEAL_MIN_MS) {
             fireGate();
             rafId = null;
@@ -743,8 +747,8 @@ pc.script.createLoadingScreen(function (app) {
 
         splash.classList.add('loaded');
         dockLogo(true);                       // glide to top-centre header spot
-        setTimeout(animateTitle, 200);
-        setTimeout(animateCta, 900);          // build the button in (line → expand → scramble)
+        animateTitle();
+        animateCta(); // Make entry available immediately after the scene is ready.
     };
 
     // ──────────────────────────────────────────────

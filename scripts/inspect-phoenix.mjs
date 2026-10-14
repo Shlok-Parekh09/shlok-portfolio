@@ -1,0 +1,10 @@
+import fs from 'node:fs';
+import {FBXLoader} from 'three/addons/loaders/FBXLoader.js';
+import {Box3,Vector3} from 'three';
+globalThis.window={URL:globalThis.URL};
+globalThis.document={createElementNS:()=>({addEventListener(){},removeEventListener(){},set src(value){}})};
+const b=fs.readFileSync('public/portfolio/models/phoenix/source/fly.fbx');
+const model=new FBXLoader().parse(b.buffer.slice(b.byteOffset,b.byteOffset+b.byteLength),'');
+console.log('clips',model.animations.map(c=>({name:c.name,duration:c.duration,tracks:c.tracks.length})));
+const box=new Box3().setFromObject(model);console.log('bounds',box.min.toArray(),box.max.toArray());
+model.traverse(o=>{if(o.isMesh)console.log(o.name,o.geometry.attributes.position.count,[].concat(o.material).map(m=>({name:m.name,map:m.map?.name,emissive:m.emissiveMap?.name})));});

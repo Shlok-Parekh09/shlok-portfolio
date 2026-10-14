@@ -8,6 +8,7 @@
     "start": "node scripts/server.mjs",
     "build": "node scripts/build.mjs",
     "room": "node scripts/build-room.mjs",
+    "solves": "node scripts/build-solves.mjs",
     "personalize": "node scripts/personalize.mjs"
   },
   "engines": {

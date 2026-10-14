@@ -1,0 +1,4 @@
+[
+  {"id":"computer","start":0.550,"end":0.582,"count":120,"base":"/portfolio/transitions/computer","ready":false},
+  {"id":"certificates","start":0.704,"end":0.760,"count":120,"base":"/portfolio/transitions/certificates","ready":false}
+]

@@ -1,0 +1,436 @@
+{
+  "disabledLegacyEntities": 89,
+  "deferredBytes": 5529780,
+  "deferred": [
+    {
+      "id": "294760742",
+      "name": "BlackTiles",
+      "size": 0
+    },
+    {
+      "id": "295657348",
+      "name": "mesh.006",
+      "size": 0
+    },
+    {
+      "id": "295657340",
+      "name": "Paint Gloss Black #1",
+      "size": 0
+    },
+    {
+      "id": "295657341",
+      "name": "Aluminum Polished #3",
+      "size": 0
+    },
+    {
+      "id": "295657342",
+      "name": "Aluminum Polished #1",
+      "size": 0
+    },
+    {
+      "id": "294776006",
+      "name": "Gold_Brass",
+      "size": 0
+    },
+    {
+      "id": "295657344",
+      "name": "Paint Gloss Black #3",
+      "size": 0
+    },
+    {
+      "id": "295657343",
+      "name": "Aluminum Polished #2",
+      "size": 0
+    },
+    {
+      "id": "295657346",
+      "name": "Paint Gloss Black #2",
+      "size": 0
+    },
+    {
+      "id": "295657350",
+      "name": "mesh",
+      "size": 0
+    },
+    {
+      "id": "295657351",
+      "name": "mesh.001",
+      "size": 0
+    },
+    {
+      "id": "295657349",
+      "name": "mesh.002",
+      "size": 0
+    },
+    {
+      "id": "295657352",
+      "name": "mesh.003",
+      "size": 0
+    },
+    {
+      "id": "295657353",
+      "name": "mesh.004",
+      "size": 0
+    },
+    {
+      "id": "295657354",
+      "name": "mesh.005",
+      "size": 0
+    },
+    {
+      "id": "295713686",
+      "name": "Processor.002",
+      "size": 0
+    },
+    {
+      "id": "297279737",
+      "name": "circuitCHIP",
+      "size": 0
+    },
+    {
+      "id": "295655813",
+      "name": "GoldCHIP",
+      "size": 0
+    },
+    {
+      "id": "295714357",
+      "name": "wafer",
+      "size": 0
+    },
+    {
+      "id": "296902349",
+      "name": "Cube.926",
+      "size": 0
+    },
+    {
+      "id": "298621173",
+      "name": "POD-Cabinet_Black",
+      "size": 0
+    },
+    {
+      "id": "294776005",
+      "name": "Panel_DarkGrey",
+      "size": 0
+    },
+    {
+      "id": "294776007",
+      "name": "Silver_Metal",
+      "size": 0
+    },
+    {
+      "id": "297261773",
+      "name": "Cube.003",
+      "size": 0
+    },
+    {
+      "id": "294776008",
+      "name": "Cabinet_Black",
+      "size": 0
+    },
+    {
+      "id": "297329782",
+      "name": "3Dtxt",
+      "size": 0
+    },
+    {
+      "id": "297721294",
+      "name": "Plane",
+      "size": 0
+    },
+    {
+      "id": "298352573",
+      "name": "Plane",
+      "size": 0
+    },
+    {
+      "id": "298352590",
+      "name": "Car-floor",
+      "size": 0
+    },
+    {
+      "id": "298497716",
+      "name": "rearlightflare.webp",
+      "size": 46754
+    },
+    {
+      "id": "298499543",
+      "name": "backflare.webp",
+      "size": 18638
+    },
+    {
+      "id": "298615133",
+      "name": "shadowcar.webp",
+      "size": 131602
+    },
+    {
+      "id": "298623365",
+      "name": "reflectionPOD.webp",
+      "size": 34808
+    },
+    {
+      "id": "298949857",
+      "name": "Rear_Bump_Light",
+      "size": 0
+    },
+    {
+      "id": "297270905",
+      "name": "Rear_Light_Glass",
+      "size": 0
+    },
+    {
+      "id": "298949858",
+      "name": "Tire_RL",
+      "size": 0
+    },
+    {
+      "id": "297270880",
+      "name": "Tire_Thread",
+      "size": 0
+    },
+    {
+      "id": "298949859",
+      "name": "Charging_Port",
+      "size": 0
+    },
+    {
+      "id": "297270871",
+      "name": "Plastic_Black_Shiny",
+      "size": 0
+    },
+    {
+      "id": "297270873",
+      "name": "Windows_Glass",
+      "size": 0
+    },
+    {
+      "id": "297270870",
+      "name": "Car_Paint",
+      "size": 0
+    },
+    {
+      "id": "297270886",
+      "name": "Red_Light",
+      "size": 0
+    },
+    {
+      "id": "297270904",
+      "name": "Plastic_Black_Matte",
+      "size": 0
+    },
+    {
+      "id": "297270874",
+      "name": "Aluminum_Interior",
+      "size": 0
+    },
+    {
+      "id": "297270878",
+      "name": "Leather_Black",
+      "size": 0
+    },
+    {
+      "id": "297270876",
+      "name": "Leather_White",
+      "size": 0
+    },
+    {
+      "id": "297270877",
+      "name": "LED_Light_Interior",
+      "size": 0
+    },
+    {
+      "id": "297270884",
+      "name": "Stitches_White",
+      "size": 0
+    },
+    {
+      "id": "297270879",
+      "name": "Mirror",
+      "size": 0
+    },
+    {
+      "id": "298949860",
+      "name": "Interior",
+      "size": 0
+    },
+    {
+      "id": "297270902",
+      "name": "Aluminiun_Black_Interior",
+      "size": 0
+    },
+    {
+      "id": "297270881",
+      "name": "Carpet_Black",
+      "size": 0
+    },
+    {
+      "id": "297270882",
+      "name": "Fabric_White",
+      "size": 0
+    },
+    {
+      "id": "297270883",
+      "name": "Rubber_Interiorpedales",
+      "size": 0
+    },
+    {
+      "id": "298949861",
+      "name": "Seats",
+      "size": 0
+    },
+    {
+      "id": "297270888",
+      "name": "Leather_Perfurated_Seats",
+      "size": 0
+    },
+    {
+      "id": "297270885",
+      "name": "Leather_Seats",
+      "size": 0
+    },
+    {
+      "id": "297270903",
+      "name": "Stitches_Black",
+      "size": 0
+    },
+    {
+      "id": "298949862",
+      "name": "Dash",
+      "size": 0
+    },
+    {
+      "id": "297270887",
+      "name": "Plastic_Black_Interior",
+      "size": 0
+    },
+    {
+      "id": "298949863",
+      "name": "Body.005",
+      "size": 0
+    },
+    {
+      "id": "298949864",
+      "name": "Body.004",
+      "size": 0
+    },
+    {
+      "id": "298949865",
+      "name": "Stering Wheel.001",
+      "size": 0
+    },
+    {
+      "id": "297270889",
+      "name": "Plastic_Black_Stering_Wheel",
+      "size": 0
+    },
+    {
+      "id": "298949866",
+      "name": "Trunk_Rear_Light.002",
+      "size": 0
+    },
+    {
+      "id": "298949867",
+      "name": "Trunk_Rear_Light.003",
+      "size": 0
+    },
+    {
+      "id": "298988833",
+      "name": "Text",
+      "size": 0
+    },
+    {
+      "id": "298988832",
+      "name": "Text.005",
+      "size": 0
+    },
+    {
+      "id": "294760775",
+      "name": "Poliigon_TilesCeramicWhite_6956_AmbientOcclusion.jpg",
+      "size": 18059
+    },
+    {
+      "id": "298888460",
+      "name": "Poliigon_TilesCeramicWhite_6956_Normal.png",
+      "size": 511027
+    },
+    {
+      "id": "296323877",
+      "name": "Reflection3.png",
+      "size": 382800
+    },
+    {
+      "id": "295713684",
+      "name": "processor.glb",
+      "size": 541660
+    },
+    {
+      "id": "299345449",
+      "name": "wafertexure_upscayl2.webp",
+      "size": 381628
+    },
+    {
+      "id": "296902347",
+      "name": "GDX-JOIN2 - FIXtop2.glb",
+      "size": 825104
+    },
+    {
+      "id": "297261766",
+      "name": "GDX-3PODS-F2.glb",
+      "size": 1535080
+    },
+    {
+      "id": "297721293",
+      "name": "triangle3D.glb",
+      "size": 1576
+    },
+    {
+      "id": "298352572",
+      "name": "CurvedScreen.glb",
+      "size": 21728
+    },
+    {
+      "id": "294760950",
+      "name": "monochrome_studio_02_512k-sharp.png",
+      "size": 206288
+    },
+    {
+      "id": "297329940",
+      "name": "000395480029reflect.png",
+      "size": 431782
+    },
+    {
+      "id": "297270893",
+      "name": "Stitches_Opacity_1.webp",
+      "size": 17102
+    },
+    {
+      "id": "297270891",
+      "name": "Stitches_Opacity.webp",
+      "size": 2398
+    },
+    {
+      "id": "297270892",
+      "name": "Carpet_Diffuse.webp",
+      "size": 118208
+    },
+    {
+      "id": "297270901",
+      "name": "Leather_Perforated_Diffuse.webp",
+      "size": 27886
+    },
+    {
+      "id": "297298133",
+      "name": "leather_Bump copy.webp",
+      "size": 50022
+    },
+    {
+      "id": "297270895",
+      "name": "Plastic_Bump.webp",
+      "size": 83934
+    },
+    {
+      "id": "298988831",
+      "name": "AutonomousDeployment.glb",
+      "size": 141696
+    }
+  ]
+}

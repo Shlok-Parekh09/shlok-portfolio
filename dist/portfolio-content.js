@@ -32,23 +32,33 @@ window.PORTFOLIO_CONTENT = {
     { id: 'matrix', title: 'The Matrix 26', category: 'Web · Interactive experience', image: '/portfolio/projects/3.matrix_website.png', summary: 'An interactive game-theory challenge website.', description: '', tags: ['Game theory', 'Web experience'], url: 'https://the-matrix-26.vercel.app/', repository: 'https://github.com/Shlok-Parekh09/The-Matrix-26' },
   ],
   songs: [
+    { title: 'We Will Meet Again', artist: '', src: '/portfolio/music/We will Meet Again.mp3', logo: '/logos/we_will_meet_again.jpg' },
+    { title: 'Honeypie', artist: 'JAWNY', src: '/portfolio/music/honeypie.mp3', logo: '/logos/Honeypie.webp' },
     { title: 'CO2', artist: 'Prateek Kuhad', src: '/portfolio/music/Co2 - SouthMelody.mp3', logo: '/logos/co2.jpg' },
     { title: 'Namo Namo', artist: 'Amit Trivedi', src: '/portfolio/music/Namo Namo - Lyrical  Kedarnath  Sushant Rajput  Sara Ali Khan  Amit Trivedi  Amitabh B - Zee Music Company.mp3', logo: '/logos/namo namo.jpg' },
     { title: 'Sunflower', artist: 'Post Malone, Swae Lee', src: '/portfolio/music/Post Malone, Swae Lee - Sunflower.mp3', logo: '/logos/sunflower.jpg' },
     { title: 'Blinding Lights', artist: 'The Weeknd', src: '/portfolio/music/The Weeknd - Blinding Lights (Official Audio).mp3', logo: '/logos/blinding lights.jpg' },
     { title: 'Double Take', artist: 'Dhruv', src: '/portfolio/music/dhruv_-_double_take_(mp3.pm).mp3', logo: '/logos/double take.jpg' },
+    { title: 'In Your Wings, I Found Me', artist: '', src: '/portfolio/music/In Your Wings, I Found Me.mp3', logo: '/logos/In Your Wings, I Found Me.jpeg' },
+    { title: 'Wavin’ Flag', artist: 'K’naan', src: '/portfolio/music/K-Naan-Wavin-Flag.mp3', logo: '/logos/wavinflag.jpeg' },
   ],
+  htb: {
+    url: 'https://medium.com/@shlokparekh08',
+    profile: 'https://profile.hackthebox.com/profile/019e6a96-9db2-712c-94a2-df18d868630a',
+    vault: 'Hack The Box Vault',
+    index: '/portfolio/htb/index.json',
+  },
+  roomTV: { src: '/portfolio/room/ash-alain.mp4' },
   ending: {
     eyebrow: 'NEXT CHAPTER / LET’S CONNECT',
     title: 'Good things begin\nwith a conversation.',
     description: 'I’m Shlok, a student exploring cybersecurity, AI, and software engineering. I build with curiosity and a purpose: making technology safer and useful in the real world.',
-    videos: ['/portfolio/ending/132251-752803360_medium.mp4', '/portfolio/ending/147290-791334083_medium.mp4'],
     email: 'shlokparekh08@gmail.com',
     phone: '9769540914',
     photo: '/portfolio/contact/shlok.jpeg',
     resume: '/resume.pdf', // Add resume.pdf to the Portfolio folder; the local server serves it automatically.
-    soundtrack: '/portfolio/ending/interstellar.mp3',
-    posters: ['/portfolio/ending/travel-poster.jpg', '/portfolio/ending/blackhole-poster.jpg'],
+    soundtrack: '/portfolio/ending/interstellar-quentingaming.mp3',
+    posters: ['/portfolio/ending/travel-poster.jpg', '/portfolio/ending/blackhole-refined.webp'],
   },
 };
 

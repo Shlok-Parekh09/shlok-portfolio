@@ -6,16 +6,18 @@ ShlokPortfolio.prototype.initialize = function () {
   this.reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
   this.canvas=this.app.graphicsDevice.canvas;this.audioManager=this.entity.script.audioManager;this.originalMaster=this.audioManager.masterVolume;
   this.buildInterface();this.buildRoom();this.buildEnding();
+  window.installPortfolioScene?.(this.app);
+  this.listen(window,'keydown',e=>{if(this.laptopFocused){e.stopImmediatePropagation();if(e.key==='Escape'){e.preventDefault();this.room?.blurLaptop();}}},{capture:true});
   this.listen(window,'resize',()=>this.layout());this.listen(window,'pointerup',e=>this.pickProject(e));
   this.listen(window,'experienceStart',()=>{this.unlockAudio();const timer=setTimeout(()=>this.navigateChapter(),1600);this.cleanups.push(()=>clearTimeout(timer));});
   this.listen(window,'hashchange',()=>{if(this.audioUnlocked)this.navigateChapter();});
-  this.listen(document,'visibilitychange',()=>{if(document.hidden){this.video.pause();this.music.pause();this.song.pause();}else{if(this.endingActive&&this.endingIndex===0)this.playFilm();this.syncAudio();}});
+  this.listen(document,'visibilitychange',()=>{if(document.hidden){this.music.pause();this.song.pause();}else this.syncAudio();});
   this.bus('scroll:progress',p=>this.onProgress(p));this.bus('maphud:layout',rect=>this.layoutSkills(rect));
   this.bus('maphud:track',transform=>{this.skillsTracking.style.transform=transform;});
   this.on('destroy',this.cleanup,this);this.layout();
 };
 ShlokPortfolio.prototype.listen=function(target,name,fn,options){target.addEventListener(name,fn,options);this.cleanups.push(()=>target.removeEventListener(name,fn,options));};
-ShlokPortfolio.prototype.navigateChapter=function(){const chapters={intro:.17,skills:.227,room:.315,certificates:.395,projects:.635,journey:.75,contact:1};const key=location.hash.slice(1);if(Object.hasOwn(chapters,key))EventBus.emit('scroll:setProgress',chapters[key]);};
+ShlokPortfolio.prototype.navigateChapter=function(){const chapters={intro:.17,skills:.227,room:.315,certificates:.595,projects:.395,journey:.75,contact:1};const key=location.hash.slice(1);if(Object.hasOwn(chapters,key))EventBus.emit('scroll:setProgress',chapters[key]);};
 ShlokPortfolio.prototype.bus=function(name,fn){EventBus.on(name,fn);this.cleanups.push(()=>EventBus.off(name,fn));};
 ShlokPortfolio.prototype.el=function(tag,cls,text,parent){const e=document.createElement(tag);if(cls)e.className=cls;if(text)e.textContent=text;if(parent)parent.append(e);return e;};
 ShlokPortfolio.prototype.button=function(text,label,parent,action){const b=this.el('button','sp-button',text,parent);b.type='button';b.setAttribute('aria-label',label);this.listen(b,'click',action);return b;};
@@ -41,13 +43,25 @@ ShlokPortfolio.prototype.buildInterface=function(){
 };
 ShlokPortfolio.prototype.setSkill=function(index){if(index===this.skillIndex)return;this.skillIndex=index;const s=this.content.skills[index];this.skillCount.textContent=`SKILLS / ${String(index+1).padStart(2,'0')} — 06`;this.skillTitle.textContent=s.title;this.skillTools.replaceChildren();s.tools.forEach(t=>this.el('li','',t,this.skillTools));};
 ShlokPortfolio.prototype.layoutSkills=function(rect){if(!rect)return;const padding=innerWidth<600?17:35;Object.assign(this.skills.style,{left:`${rect.L+padding}px`,top:`${rect.T+padding}px`,width:`${Math.max(100,rect.W-padding*2)}px`,height:`${Math.max(100,rect.H-padding*2)}px`});};
-ShlokPortfolio.prototype.layout=function(){if(typeof MapHud!=='undefined'&&MapHud.rect)this.layoutSkills(MapHud.rect);if(this.electric){this.electric.width=Math.min(innerWidth,1600);this.electric.height=Math.round(this.electric.width*innerHeight/innerWidth);}this.applyIris();};
+ShlokPortfolio.prototype.layout=function(){if(typeof MapHud!=='undefined'&&MapHud.rect)this.layoutSkills(MapHud.rect);this.applyIris();};
+ShlokPortfolio.prototype.setLaptopFocus=function(focused){
+ if(this.laptopFocused===focused)return;this.laptopFocused=focused;
+ const scroll=this.entity.script.scrollManager;
+ if(scroll){scroll._targetRaw=scroll._currentRaw;if(focused){this.scrollWasEnabled=scroll.enabled;scroll.enabled=false;}else scroll.enabled=this.scrollWasEnabled;}
+};
 ShlokPortfolio.prototype.buildRoom=function(){
   this.roomHost=this.el('section','sp-room','',this.ui);this.roomHost.hidden=true;this.roomHost.setAttribute('aria-label','The learning room');
   this.roomLoading=this.el('div','sp-room-loading','Opening the room…',this.roomHost);this.roomLoading.setAttribute('role','status');
   const caption=this.el('div','sp-room-caption','',this.roomHost);this.roomEyebrow=this.el('span','sp-eyebrow','02 / THE LEARNING ROOM',caption);this.roomTitle=this.el('h2','','A space for curiosity.',caption);
   this.roomHint=this.el('p','','Scroll to explore the PC archive. Select the laptop for music.',caption);
   this.laptopAccess=this.el('div','sp-laptop-access','',this.roomHost);
+  this.nightMode=false;
+  this.lightButton=this.button('☀ MORNING','Switch to night lighting',this.roomHost,()=>{
+   this.nightMode=!this.nightMode;this.room?.setNight(this.nightMode);
+   this.lightButton.textContent=this.nightMode?'☾ NIGHT':'☀ MORNING';
+   this.lightButton.setAttribute('aria-pressed',String(this.nightMode));
+   this.lightButton.setAttribute('aria-label',this.nightMode?'Switch to morning lighting':'Switch to night lighting');
+  });this.lightButton.classList.add('sp-room-light');this.lightButton.setAttribute('aria-pressed','false');
    this.laptopAccess.innerHTML=`
  <style>
    .sp-player { position:absolute; bottom:24px; right:24px; display:flex; flex-direction:column; align-items:center; user-select:none; color:#000; pointer-events:auto; }
@@ -82,17 +96,21 @@ ShlokPortfolio.prototype.buildRoom=function(){
    .sp-player .song-item .si-artist { font-size:12px; color:#71717a; }\n    .sp-player .disc-center { width:32px; height:32px; top:48px; left:48px; }
    
     @media (max-width: 800px) {
-      .sp-player { position:fixed !important; bottom:16px !important; left:16px !important; right:auto !important; align-items:center !important; }
-      .sp-player .box { width:280px !important; height:120px !important; justify-content:flex-start; margin: 0; }
+      .sp-player { position:fixed !important; bottom:calc(12px + env(safe-area-inset-bottom)) !important; left:12px !important; right:auto !important; align-items:flex-start !important; width:min(320px,calc(100vw - 24px)); }
+      .sp-player .box { width:100% !important; height:auto !important; min-height:142px; justify-content:flex-start; margin:0; box-sizing:border-box; }
       .sp-player .core-btns { display:none; }
-      .sp-player .title-row { display:flex; opacity:1; pointer-events:auto; padding-top:8px; }
+      .sp-player .title-row { display:flex; opacity:1; pointer-events:auto; box-sizing:border-box; min-height:64px; padding:10px 12px 6px 70px; text-align:left; }
+      .sp-player .title-row .song-name { font-size:16px; }
+      .sp-player .controls { box-sizing:border-box; }
+      .sp-player .btn-row > * { width:44px; height:44px; }
+      .sp-player .seek-row input { min-width:0; }
       .sp-player .controls { display:flex; opacity:1; }
       .sp-player .song-list { display:none !important; }
       .sp-player #custom-list-btn { display:none !important; }
-      .sp-player .disc-anim { width:80px; height:80px; overflow:visible; margin-bottom:8px; margin-top:0; }
-      .sp-player .disc-anim svg { width:80px; height:80px; }
-      .sp-player .disc-center { width:20px; height:20px; top:30px; left:30px; border-width:2px; }
-      .sp-player:hover .disc-anim, .sp-player.expanded .disc-anim { height:80px; }
+      .sp-player .disc-anim { position:absolute; z-index:31; left:12px; top:12px; width:44px; height:44px; overflow:hidden; margin:0; border-radius:50%; pointer-events:none; transition:none; }
+      .sp-player .disc-anim svg { width:44px; height:44px; box-sizing:border-box; border-width:2px!important; }
+      .sp-player .disc-center { width:10px; height:10px; top:17px; left:17px; border-width:2px!important; box-sizing:border-box; }
+      .sp-player:hover .disc-anim, .sp-player.expanded .disc-anim { height:44px; }
     }
  </style>
  <div class="sp-player" id="sp-player-root">
@@ -147,17 +165,13 @@ ShlokPortfolio.prototype.buildRoom=function(){
    this.listen(this.laptopAccess, 'focus-laptop', () => this.room?.focusLaptop());
    const playerRoot = this.laptopAccess.querySelector('#sp-player-root');
    const playStatus = this.laptopAccess.querySelector('#playStatus');
-   const playIcon = this.laptopAccess.querySelector('.play-icon');
-   const pauseIcon = this.laptopAccess.querySelector('.pause-icon');
-   this.listen(playStatus, 'change', () => {
-     if (playStatus.checked) { this.audioUnlocked=true; let p = this.song.play(); if(p) p.catch(()=>{}); playIcon.style.display='none'; pauseIcon.style.display=''; }
-     else { this.song.pause(); playIcon.style.display=''; pauseIcon.style.display='none'; }
-   });
-   this.listen(this.laptopAccess.querySelector('#custom-prev'), 'click', () => { this.selectSong((this.songIndex - 1 + this.content.songs.length) % this.content.songs.length); playStatus.checked = true; playStatus.dispatchEvent(new Event('change')); });
-   this.listen(this.laptopAccess.querySelector('#custom-next'), 'click', () => { this.selectSong((this.songIndex + 1) % this.content.songs.length); playStatus.checked = true; playStatus.dispatchEvent(new Event('change')); });
-   this.listen(this.laptopAccess.querySelector('#core-prev'), 'click', () => { this.selectSong((this.songIndex - 1 + this.content.songs.length) % this.content.songs.length); playStatus.checked = true; playStatus.dispatchEvent(new Event('change')); });
-   this.listen(this.laptopAccess.querySelector('#core-play'), 'click', () => { playStatus.checked = !playStatus.checked; playStatus.dispatchEvent(new Event('change')); });
-   this.listen(this.laptopAccess.querySelector('#core-next'), 'click', () => { this.selectSong((this.songIndex + 1) % this.content.songs.length); playStatus.checked = true; playStatus.dispatchEvent(new Event('change')); });
+   this.listen(playStatus, 'change', () => this.toggleSong());
+   for(const id of ['custom-prev','core-prev'])this.listen(this.laptopAccess.querySelector('#'+id),'click',()=>this.selectSong((this.songIndex-1+this.content.songs.length)%this.content.songs.length));
+   for(const id of ['custom-next','core-next'])this.listen(this.laptopAccess.querySelector('#'+id),'click',()=>this.selectSong((this.songIndex+1)%this.content.songs.length));
+   const corePlay=this.laptopAccess.querySelector('#core-play');
+   corePlay.setAttribute('role','button');corePlay.tabIndex=0;
+   this.listen(corePlay,'click',()=>this.toggleSong());
+   this.listen(corePlay,'keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();this.toggleSong();}});
    
    const itemsContainer = this.laptopAccess.querySelector('#custom-song-items');
    
@@ -177,7 +191,7 @@ ShlokPortfolio.prototype.buildRoom=function(){
      item.style.alignItems = 'center';
      item.style.gap = '12px';
      item.innerHTML = `
-       ${song.logo ? `<img src="${song.logo}" style="width: 40px; height: 40px; border-radius: 4px; object-fit: cover; flex-shrink: 0;" />` : `<div style="width: 40px; height: 40px; border-radius: 4px; background: #e4e4e7; flex-shrink: 0;"></div>`}
+       ${song.logo ? `<img loading="lazy" decoding="async" src="${song.logo}" style="width: 40px; height: 40px; border-radius: 4px; object-fit: cover; flex-shrink: 0;" />` : `<div style="width: 40px; height: 40px; border-radius: 4px; background: #e4e4e7; flex-shrink: 0;"></div>`}
        <div>
          <div class="si-title">${song.title}</div>
          <div class="si-artist">${song.artist}</div>
@@ -186,8 +200,6 @@ ShlokPortfolio.prototype.buildRoom=function(){
      item.addEventListener('click', (e) => {
        e.stopPropagation();
        this.selectSong(i);
-       playStatus.checked = true;
-       playStatus.dispatchEvent(new Event('change'));
        collapseList();
      });
      itemsContainer.appendChild(item);
@@ -196,102 +208,109 @@ ShlokPortfolio.prototype.buildRoom=function(){
    const initialTitle=document.getElementById('custom-song-title'),initialArtist=document.getElementById('custom-song-artist');
    if(initialTitle&&this.content.songs[0])initialTitle.textContent=this.content.songs[0].title;
    if(initialArtist&&this.content.songs[0])initialArtist.textContent=this.content.songs[0].artist;
-   this.electric=this.el('canvas','sp-electric','',this.ui);this.electric.setAttribute('aria-hidden','true');this.electricCtx=this.electric.getContext('2d');
+  this.loadRoom=()=>{if(this.roomRequested)return;this.roomRequested=true;
   import('/room.js').then(m=>m.createRoom(this.roomHost,this.content,{
     onCertificate:(i,open)=>{this.certificateIndex=i;},
-    onSong:i=>this.selectSong(i),onReady:()=>{this.roomLoading.hidden=true;}
-  })).then(room=>{if(this.disposed){room.dispose();return;}this.room=room;room.setProgress(this.progress);room.setActive(this.progress>=.273&&this.progress<.583);}).catch(error=>{console.error('[SHLOK room]',error);this.roomLoading.textContent='The room could not load. You can still scroll onward to projects and contact.';});
+    onSong:i=>this.selectSong(i),onLaptopFocus:focused=>this.setLaptopFocus(focused),onReady:()=>{this.roomLoading.hidden=true;}
+  })).then(room=>{if(this.disposed){room.dispose();return;}this.room=room;room.setProgress(this.progress);room.setNight(this.nightMode);room.setActive(this.progress>=.273&&this.progress<.583);this.updateMusicState();}).catch(error=>{console.error('[SHLOK room]',error);this.roomLoading.textContent='The room could not load. You can still scroll onward to certificates and contact.';});};
 };
 ShlokPortfolio.prototype.buildEnding=function(){
   const data=this.content.ending;
   this.ending=this.el('section','sp-ending','',this.ui);this.ending.hidden=true;this.ending.setAttribute('aria-label','Journey and contact');
-  this.travelLayer=this.el('div','sp-film is-active','',this.ending);this.travelLayer.style.backgroundImage=`url("${data.posters[0]}")`;
-  this.video=this.el('video','sp-ending-video','',this.travelLayer);this.video.muted=true;this.video.playsInline=true;this.video.preload='auto';this.video.poster=data.posters[0];this.video.src=data.videos[0];this.video.setAttribute('aria-label','Travelling through space');
-  this.listen(this.video,'loadeddata',()=>this.video.classList.add('has-frame'));
-  this.listen(this.video,'error',()=>{this.video.hidden=true;if(this.endingActive)this.showContact();});
-  this.listen(this.video,'ended',()=>this.showContact());
   // A still frame, not a second background video. The person and black hole remain visible.
-  this.contactLayer=this.el('div','sp-film sp-contact-backdrop','',this.ending);this.contactLayer.style.backgroundImage=`url("${data.posters[1]}")`;
+  this.contactLayer=this.el('div','sp-film sp-contact-backdrop','',this.ending);
+  this.loadContact=()=>{if(this.contactRequested)return;this.contactRequested=true;this.contactLayer.style.backgroundImage=`url("${data.posters[1]}")`;};
   this.el('div','sp-ending-shade','',this.ending);
-  this.travelCopy=this.el('div','sp-travel-copy','',this.ending);this.el('span','sp-eyebrow','BEYOND THE FAMILIAR',this.travelCopy);this.el('h2','','Curiosity has\nno destination.',this.travelCopy);
   this.contact=this.el('div','sp-contact','',this.ending);this.contact.hidden=true;
-  const portrait=this.el('figure','sp-portrait','',this.contact),photo=this.el('img','','',portrait);photo.src=data.photo;photo.alt='Shlok Parekh';photo.decoding='async';
+  for(const type of ['wheel','touchmove'])this.listen(this.contact,type,e=>e.stopPropagation(),{passive:true});
+  const portrait=this.el('figure','sp-portrait','',this.contact),photo=this.el('img','','',portrait);photo.loading='lazy';photo.src=data.photo;photo.alt='Shlok Parekh';photo.decoding='async';
   this.el('figcaption','','SHLOK PAREKH / ALWAYS EXPLORING',portrait);
   const copy=this.el('div','sp-contact-copy','',this.contact);this.el('span','sp-eyebrow',data.eyebrow,copy);this.el('h2','',data.title,copy);this.el('p','sp-about',data.description,copy);
   const links=this.el('div','sp-contact-links','',copy);
   const email=this.el('a','sp-contact-link',data.email,links);email.href=`mailto:${data.email}`;
   this.filmStatus=this.el('span','sp-film-status','SHLOK / THE JOURNEY CONTINUES',this.ending);
-  this.music=new Audio(data.soundtrack);this.music.preload='auto';this.music.loop=true;this.music.volume=0;this.music.hidden=true;this.music.setAttribute('aria-label','Interstellar soundtrack');this.ending.append(this.music);
+  this.music=new Audio(data.soundtrack);this.music.preload='none';this.music.loop=true;this.music.volume=0;this.music.hidden=true;this.music.setAttribute('aria-label','Interstellar soundtrack');this.ending.append(this.music);
   this.song=new Audio(this.content.songs[0].src);this.song.preload='metadata';this.song.loop=true;this.song.volume=0;this.song.hidden=true;this.song.setAttribute('aria-label','Laptop music');this.roomHost.append(this.song);
+  for(const name of ['playing','play','canplay','pause','waiting','ended','error'])this.listen(this.song,name,()=>this.updateMusicState());
+  import('/htb-link.js').then(({createHTB})=>{if(!this.disposed){this.htb=createHTB(this.ending,this.content.htb);this.htb.setVisible(this.endingIndex===1);}}).catch(console.error);
 };
 ShlokPortfolio.prototype.unlockAudio=function(){
   // The landing-page entry gesture unlocks local audio; no YouTube or playback toolbar.
   this.audioUnlocked=true;for(const audio of [this.music,this.song]){audio.volume=0;audio.play().then(()=>{if(!this.endingActive&&!(this.progress>=.273&&this.progress<.583)){audio.pause();audio.currentTime=0;}this.syncAudio();}).catch(()=>{});}
 };
-ShlokPortfolio.prototype.selectSong=function(i){this.songIndex=i;this.song.src=this.content.songs[i].src;this.song.loop=true;this.room?.selectSong(i);if(this.songButtons)this.songButtons.forEach((b,n)=>b.setAttribute('aria-pressed',String(i===n)));const titleEl=document.getElementById('custom-song-title'),artistEl=document.getElementById('custom-song-artist');if(titleEl)titleEl.textContent=this.content.songs[i].title;if(artistEl)artistEl.textContent=this.content.songs[i].artist;this.audioUnlocked=true;this.syncAudio();};
+ShlokPortfolio.prototype.toggleSong=function(){
+ gsap.killTweensOf(this.song);
+ if(!this.song.paused&&!this.song.ended){this.songUserPaused=true;this.song.pause();}
+ else {this.songUserPaused=false;this.audioUnlocked=true;this.song.volume=.48;this.song.play().then(()=>this.updateMusicState()).catch(()=>this.updateMusicState());}
+ this.updateMusicState();
+};
+ShlokPortfolio.prototype.updateMusicState=function(){
+ const song=this.content.songs[this.songIndex],playing=!this.song.paused&&!this.song.ended&&!this.song.error;
+ this.room?.setMusicState(playing&&this.song.readyState>=3,song.title);
+ const input=this.laptopAccess.querySelector('#playStatus');if(input)input.checked=playing;
+ this.laptopAccess.querySelector('.play-icon').style.display=playing?'none':'';
+ this.laptopAccess.querySelector('.pause-icon').style.display=playing?'':'none';
+ const core=this.laptopAccess.querySelector('#core-play');
+ core.innerHTML=this.laptopAccess.querySelector(playing?'.pause-icon':'.play-icon').outerHTML;
+ core.firstElementChild.style.display='';core.firstElementChild.removeAttribute('class');
+ for(const control of [core,input?.parentElement]){control?.setAttribute('aria-label',playing?'Pause music':'Play music');control?.setAttribute('aria-pressed',String(playing));}
+ const disc=this.laptopAccess.querySelector('.disc-anim svg');if(disc)disc.style.animationPlayState=playing?'running':'paused';
+};
+ShlokPortfolio.prototype.selectSong=function(i){if(!this.content.songs[i])return;this.songUserPaused=false;this.songIndex=i;gsap.killTweensOf(this.song);this.song.src=this.content.songs[i].src;this.song.loop=true;this.song.volume=.48;this.room?.selectSong(i);const titleEl=document.getElementById('custom-song-title'),artistEl=document.getElementById('custom-song-artist');if(titleEl)titleEl.textContent=this.content.songs[i].title;if(artistEl)artistEl.textContent=this.content.songs[i].artist;this.audioUnlocked=true;this.updateMusicState();this.song.play().then(()=>this.updateMusicState()).catch(()=>this.updateMusicState());};
 ShlokPortfolio.prototype.syncAudio=function(){
   if(!this.music||!this.song)return;const contact=this.endingActive&&this.endingIndex===1;
   const room=this.progress>=.273&&this.progress<.583&&!this.endingActive;
-  for(const [audio,wanted] of [[this.music,contact],[this.song,room]]){
+  for(const [audio,wanted] of [[this.music,contact],[this.song,room&&!this.songUserPaused]]){
     gsap.killTweensOf(audio);const play=wanted&&this.audioUnlocked&&!document.hidden;
-    if(play){audio.play().then(()=>{if(document.hidden){audio.pause();return;}gsap.to(audio,{volume:audio===this.music ? .20 : .15,duration:1.5});}).catch(()=>{});}
+    if(play){audio.play().then(()=>{if(document.hidden){audio.pause();return;}gsap.to(audio,{volume:audio===this.music ? .72 : .48,duration:1.5});}).catch(()=>{});}
     else gsap.to(audio,{volume:0,duration:.55,onComplete:()=>audio.pause()});
   }
 };
-ShlokPortfolio.prototype.playFilm=function(){if(this.endingActive&&this.endingIndex===0&&!document.hidden)this.video.play().catch(()=>{});};
-ShlokPortfolio.prototype.showContact=function(){if(!this.endingActive||this.endingIndex===1)return;this.endingIndex=1;this.contactLayer.classList.add('is-active');this.contact.hidden=false;this.travelCopy.hidden=true;this.filmStatus.textContent='INTERSTELLAR · HANS ZIMMER / CONTACT';this.syncAudio();};
 ShlokPortfolio.prototype.applyIris=function(){if(!this.ending)return;const iris=this.T.iris(this.progress),radius=Math.hypot(innerWidth,innerHeight)/2+4;this.ending.style.clipPath=`circle(${radius*iris.reveal}px at 50% 50%)`;this.ending.style.filter=`saturate(${iris.color}) brightness(${.62+iris.color*.38})`;if(iris.reveal===1.0){this.canvas.style.opacity='0';}else{this.canvas.style.opacity='1';}};
 ShlokPortfolio.prototype.onProgress=function(p){
   if(window.__sceneWarmup)return;this.progress=p;const T=this.T;
+  // Do not decode the second 3D scene during the diamond landing (.14–.198).
+  if(p>=.218)this.loadRoom?.();
+  if(p>=.62)this.loadContact?.();
   const phase=p>=.704?'ending':p>=.582?'projects':p>=.273?'room':p>=.198?'land':p>=.14?'intro':'orbit';
   document.body.dataset.portfolioPhase=phase;this.ui.dataset.progress=p.toFixed(5);this.skillsTracking.hidden=phase!=='land';
-  if(phase==='land'){this.skillsTracking.style.opacity=T.smooth(T.range(p,.198,.207))*(1-T.smooth(T.range(p,.263,.28)));this.setSkill(Math.min(5,Math.floor(T.range(p,.208,.261)*6)));}
+  if(phase==='land'){this.skillsTracking.style.opacity=T.smooth(T.range(p,.208,.216))*(1-T.smooth(T.range(p,.268,.273)));this.setSkill(Math.min(5,Math.floor(T.range(p,.214,.266)*6)));}
   const inRoom=p>=.273&&p<.583;this.roomHost.hidden=!inRoom;
-  this.roomHost.style.opacity=T.smooth(T.range(p,.273,.287))*(1-T.smooth(T.range(p,.566,.583)));
+  // Keep script/audio updates alive, but do not draw the hidden PlayCanvas scene
+  // underneath the opaque Three.js room or final contact image.
+  this.app.autoRender=!((this.room&&p>=.287&&p<.535)||p>=.724);
+  this.roomHost.style.opacity=T.smooth(T.range(p,.273,.287));
   this.room?.setProgress(p);this.room?.setActive(inRoom);
-  this.laptopAccess.hidden=p>=.385;this.roomHint.hidden=p>=.55;
-  if(inRoom){this.roomEyebrow.textContent=p<.385?'02 / THE LEARNING ROOM':`02 / PROJECT ARCHIVE · ${this.certificateIndex+1} OF ${this.content.projects.length}`;this.roomTitle.textContent=p<.385?'A space for curiosity.':(this.content.projects[this.certificateIndex]?.title || '');this.roomHint.textContent=p<.385?'Scroll to explore the PC archive. Select the laptop for music.':'Scroll to slide through the archive. Select the PC for project links.';}
-  if(phase==='projects'){this.certificateIndex=Math.round(T.range(p,.59,.705)*(this.content.certificates.length-1));}
+  this.laptopAccess.hidden=!inRoom||p>=.535;this.lightButton.hidden=!inRoom||p>=.535;this.roomHint.hidden=p>=.535;
+  this.roomHost.querySelector('.sp-room-caption').style.opacity=String(1-T.smooth(T.range(p,.525,.545)));
+  if(inRoom){this.roomEyebrow.textContent=p<.385?'02 / THE LEARNING ROOM':p>=.535?'03 / CERTIFICATES':`02 / PROJECT ARCHIVE · ${this.certificateIndex+1} OF ${this.content.projects.length}`;this.roomTitle.textContent=p<.385?'A space for curiosity.':p>=.535?this.content.certificates[0].title:(this.content.projects[this.certificateIndex]?.title||'');this.roomHint.textContent=p<.385?'Scroll to explore the PC archive. Select the laptop for music.':'Scroll through my projects, then enter the certificate realm.';}
+  if(phase==='projects')this.certificateIndex=Math.round(T.range(p,.59,.705)*(this.content.certificates.length-1));
+  this.certificateControls.hidden=phase!=='projects';
+  if(phase==='projects')this.certificateLabel.textContent=this.content.certificates[this.certificateIndex]?.title||'Certificates';
   const active=p>=.704;
   if(active!==this.endingActive){this.endingActive=active;this.ending.hidden=!active;
-    if(active){this.endingStarted=this.elapsed;this.endingIndex=0;this.contact.hidden=true;this.travelCopy.hidden=false;this.contactLayer.classList.remove('is-active');this.video.currentTime=0;this.playFilm();}
-    else this.video.pause();
   }
+  const ending=T.ending(p),contactActive=active&&ending.contact>.5,oldEndingIndex=this.endingIndex;
+  this.endingIndex=contactActive?1:0;
+  this.htb?.setVisible(contactActive);
+  this.contactLayer.style.opacity='1';
+  this.contactLayer.style.transform=`scale(${1.08-.08*ending.contact})`;
+  this.contact.hidden=!active||ending.contact===0;this.contact.style.opacity=String(ending.contact);
+  this.contact.style.pointerEvents=contactActive?'auto':'none';this.contact.inert=!contactActive;
+  this.filmStatus.textContent=contactActive?'INTERSTELLAR · QUENTINGAMING / CONTACT':'SHLOK / THE JOURNEY CONTINUES';
+  if(oldEndingIndex!==this.endingIndex)this.syncAudio();
   if(phase!==this.phase)this.syncAudio();this.applyIris();this.phase=phase;
 };
 ShlokPortfolio.prototype.openDetail=function(item,meta,links){this.detailImage.src=item.image;this.detailImage.alt=item.title;if(!this.dialog.open)this.dialog.showModal();};
 ShlokPortfolio.prototype.openCertificate=function(){const c=this.content.certificates[this.certificateIndex];if(c&&c.original)window.open(c.original,'_blank');};
 ShlokPortfolio.prototype.pickProject=function(event){if(this.phase!=='projects'||event.target!==this.canvas||this.dialog.open)return;const camera=this.app.root.findByName('UICamera ').camera,r=this.canvas.getBoundingClientRect();const start=camera.entity.getPosition().clone(),end=camera.screenToWorld(event.clientX-r.left,event.clientY-r.top,camera.farClip),ray=new pc.Ray(start,end.sub(start).normalize());for(const card of this.app.root.findByName('cardsgroup').children)if(card.enabled&&card.name.startsWith('shlok-certificate-'))for(const render of card.findComponents('render'))if(render.meshInstances.some(m=>m.aabb.intersectsRay(ray))){this.certificateIndex=Number(card.name.split('-').pop());this.openCertificate();return;}};
 ShlokPortfolio.prototype.update=function(dt){
-  const dp = this.progress - (this.lastProgress || this.progress); this.lastProgress = this.progress;
-  this.elapsed+=Math.min(dt,.1);
-  const target=this.phase==='room'||this.endingActive?0:this.originalMaster;
+  const target=this.phase==='room'||this.phase==='projects'||this.endingActive?0:this.originalMaster;
   if (Math.abs(target - this.audioManager.masterVolume) > 0.001) {
     this.audioManager.masterVolume += (target - this.audioManager.masterVolume) * (1 - Math.exp(-dt*3));
   } else if (this.audioManager.masterVolume !== target) {
     this.audioManager.masterVolume = target;
   }
-  if(this.endingActive&&this.endingIndex===0&&!document.hidden&&this.progress>=.712&&((this.elapsed-this.endingStarted>10)||(this.video.currentTime>2.9)))this.showContact();
-  if(this.endingActive&&this.endingIndex===1&&this.progress<.712){this.endingIndex=0;this.contactLayer.classList.remove('is-active');this.contact.hidden=true;this.travelCopy.hidden=false;this.filmStatus.textContent='SHLOK / THE JOURNEY CONTINUES';}
-  
-  if(this.endingActive&&this.endingIndex===0&&this.video){
-    if (dp < -0.001) this._rewinding = true;
-    else if (dp > 0.001) this._rewinding = false;
-    
-    if (this._rewinding) {
-      this.video.pause();
-      this.video.currentTime=Math.max(0,this.video.currentTime-dt*1.5);
-    } else {
-      if (this.video.paused && !document.hidden && this.video.currentTime < 3) {
-        let p = this.video.play();
-        if (p !== undefined) p.catch(()=>{});
-      }
-    }
-  }
-  
-  if(this.video&&this.video.currentTime>3)this.video.currentTime=3;
-  if(!this.endingActive&&this.video&&this.video.currentTime>0){this.video.pause();this.video.currentTime=Math.max(0,this.video.currentTime-dt*1.5);}
-  if(this.electric){this.electric.hidden=true;}
 };
-ShlokPortfolio.prototype.cleanup=function(){this.disposed=true;this.cleanups.forEach(fn=>fn());for(const a of[this.music,this.song]){gsap.killTweensOf(a);a.pause();}this.video.pause();this.room?.dispose();this.audioManager.masterVolume=this.originalMaster;this.ui.remove();this.dialog.remove();};
+ShlokPortfolio.prototype.cleanup=function(){this.disposed=true;this.setLaptopFocus(false);this.cleanups.forEach(fn=>fn());for(const a of[this.music,this.song]){gsap.killTweensOf(a);a.pause();}this.htb?.dispose();this.room?.dispose();this.app.autoRender=true;this.audioManager.masterVolume=this.originalMaster;this.ui.remove();this.dialog.remove();};
 
