@@ -54,6 +54,15 @@ ShlokPortfolio.prototype.buildRoom=function(){
   this.roomLoading=this.el('div','sp-room-loading','Opening the room…',this.roomHost);this.roomLoading.setAttribute('role','status');
   const caption=this.el('div','sp-room-caption','',this.roomHost);this.roomEyebrow=this.el('span','sp-eyebrow','02 / THE LEARNING ROOM',caption);this.roomTitle=this.el('h2','','A space for curiosity.',caption);
   this.roomHint=this.el('p','','Scroll to explore the PC archive. Select the laptop for music.',caption);
+  // Mobile swipe hint — shows a bouncing finger icon, hides on first scroll/touch
+  const swipeHint=this.el('div','sp-swipe-hint','',this.roomHost);
+  const swipeFinger=this.el('div','sp-swipe-finger','👆',swipeHint);
+  this.el('span','sp-swipe-label','Swipe to explore',swipeHint);
+  let swipeHintDismissed=false;
+  const dismissSwipeHint=()=>{if(swipeHintDismissed)return;swipeHintDismissed=true;swipeHint.classList.add('is-gone');setTimeout(()=>{swipeHint.hidden=true;},450);};
+  this.cleanups.push(EventBus.on('scroll:progress',p=>{if(p>0.01)dismissSwipeHint();})._off||(() => {}));
+  this.roomHost.addEventListener('touchstart',dismissSwipeHint,{once:true,passive:true});
+  setTimeout(dismissSwipeHint,4000);
   this.laptopAccess=this.el('div','sp-laptop-access','',this.roomHost);
   this.nightMode=false;
   this.lightButton=this.button('☀ MORNING','Switch to night lighting',this.roomHost,()=>{

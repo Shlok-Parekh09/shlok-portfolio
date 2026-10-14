@@ -49,9 +49,9 @@ function fit(ctx,img,x,y,w,h){const k=Math.min(w/img.width,h/img.height);ctx.dra
 
 export async function createRoom(host,content,{onCertificate,onSong,onReady,onLaptopFocus}={}){
  const mobile=matchMedia('(max-width: 768px), (pointer: coarse)').matches;
- const renderer=new THREE.WebGLRenderer({antialias:!mobile,alpha:false,powerPreference:'high-performance'});
+ const renderer=new THREE.WebGLRenderer({antialias:true,alpha:false,powerPreference:'high-performance'});
  renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;
- renderer.setPixelRatio(Math.min(devicePixelRatio,mobile?1.2:1.65));renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1;
+ renderer.setPixelRatio(Math.min(devicePixelRatio,mobile?1.5:1.65));renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1;
  const canvas=renderer.domElement;canvas.className='sp-room-canvas';canvas.setAttribute('aria-label','Shlok’s 3D room. Scroll through certificates on the PC; select the laptop to choose music.');host.prepend(canvas);
  const scene=new THREE.Scene();scene.background=new THREE.Color('#c6a2a1');
  const camera=new THREE.PerspectiveCamera(58,1,.05,80);

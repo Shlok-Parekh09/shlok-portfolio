@@ -212,3 +212,50 @@ body[data-portfolio-phase='ending'] #pc-overlay-audio { color: white !important;
  .sp-portrait figcaption {font-size:9px;line-height:1.6;align-self:center;}
  .sp-film-status {bottom:calc(14px + env(safe-area-inset-bottom));left:16px;right:16px;font-size:8px;line-height:1.4;}
 }
+
+/* ── Mobile swipe hint ───────────────────────────────────────── */
+.sp-swipe-hint {
+  display: none;
+  position: absolute;
+  bottom: 38px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  pointer-events: none;
+  animation: hint-fade-in .6s ease both;
+  transition: opacity .4s ease;
+}
+.sp-swipe-hint.is-gone { opacity: 0; }
+@keyframes hint-fade-in { from { opacity: 0; transform: translateX(-50%) translateY(12px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
+.sp-swipe-finger {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(255,255,255,.15);
+  border: 1.5px solid rgba(255,255,255,.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  animation: finger-bob 1.5s ease-in-out infinite;
+  backdrop-filter: blur(6px);
+  box-shadow: 0 4px 16px rgba(0,0,0,.3);
+}
+@keyframes finger-bob {
+  0%,100% { transform: translateY(0); }
+  50%      { transform: translateY(-9px); }
+}
+.sp-swipe-label {
+  font: 9px/1.5 'JetBrains Mono', monospace;
+  letter-spacing: .15em;
+  color: rgba(255,255,255,.8);
+  text-transform: uppercase;
+  text-shadow: 0 1px 8px rgba(0,0,0,.7);
+}
+/* Only show on touch / narrow screens */
+@media (pointer: coarse), (max-width: 768px) {
+  .sp-swipe-hint { display: flex; }
+}
