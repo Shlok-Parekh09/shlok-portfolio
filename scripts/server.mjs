@@ -48,6 +48,10 @@ export function createServer() {
       res.writeHead(405); return res.end('Method Not Allowed');
     }
 
+    if (req.url.includes('%00') || req.url.includes('\0')) {
+      res.writeHead(400); return res.end('Bad Request');
+    }
+
     let urlPath = req.url.split('?')[0];
     try { urlPath = decodeURIComponent(urlPath); } catch (_) {}
     if (urlPath === '/' || urlPath === '') urlPath = '/index.html';
