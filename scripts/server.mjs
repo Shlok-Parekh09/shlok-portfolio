@@ -60,7 +60,8 @@ export function createServer() {
     const extCheck = path.extname(urlPath).toLowerCase();
 
     // Block path traversal and restricted paths/extensions
-    if (!filePath.startsWith(ROOT) || urlPath.includes('/.') || urlPath.includes('\\') || urlPath.includes(':') || (extCheck !== '' && !MIME[extCheck])) {
+    // Use ROOT + path.sep for strict directory matching (prevents sibling prefix traversal like /public-secrets)
+    if ((!filePath.startsWith(ROOT + path.sep) && filePath !== ROOT) || urlPath.includes('/.') || urlPath.includes('\\') || urlPath.includes(':') || (extCheck !== '' && !MIME[extCheck])) {
       res.writeHead(403); return res.end('Forbidden');
     }
 
