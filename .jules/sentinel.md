@@ -6,3 +6,7 @@
 **Vulnerability:** The static file server (`scripts/server.mjs`) would crash with a `TypeError [ERR_INVALID_ARG_VALUE]` if a request URL contained a null byte (`%00`), leading to a Denial of Service (DoS) due to an unhandled exception in Node.js `fs.stat`.
 **Learning:** Node.js file system APIs are strictly validated against null bytes. Unsanitized URLs passed to file path handlers can cause application termination.
 **Prevention:** Block any requests containing null bytes early in the request lifecycle and return a `400 Bad Request`.
+## 2026-10-16 - Prefix Path Traversal via `startsWith`
+**Vulnerability:** The static file server used `!filePath.startsWith(ROOT)` to validate that requested files were within the `public/` directory. This is vulnerable to a prefix-matching path traversal attack, where sibling directories starting with the same name (e.g., `public-secrets`) would bypass the check.
+**Learning:** Naive string matching like `startsWith` for path verification is insecure because it doesn't enforce directory boundaries. It can be exploited if an attacker can craft a path that resolves to a valid sibling directory using `path.join`.
+**Prevention:** Always append a path separator when using `startsWith` for directory boundary checks: `!filePath.startsWith(ROOT + path.sep) && filePath !== ROOT`. Alternatively, use robust path resolution functions or check if `path.relative(ROOT, filePath).startsWith('..')`.
